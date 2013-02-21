@@ -79,15 +79,22 @@ function fileContext(file, line) {
   return msg;
 }
 function stackContext(stack) {
-  var msg = '';
+  var msg = '',
+      seenClient;
   for (var i = 0; i < stack.length; i++) {
     var frame = stack[i];
     if (frame.indexOf('client-context.js') >= 0) {
       // Don't include anything more than the code we called
-      break;
+      if (seenClient) {
+        msg += '  at <native>\n';
+        seenClient = false;
+      }
+    } else {
+      seenClient = true;
+
+      frame = mapReference(frame);
+      msg += '  at ' + frame.source + ':' + frame.line + ':' + frame.column + '\n';
     }
-    frame = mapReference(frame);
-    msg += '  at ' + frame.source + ':' + frame.line + ':' + frame.column + '\n';
   }
   return msg;
 }
