@@ -100,8 +100,12 @@ function stackContext(stack) {
     } else {
       seenClient = true;
 
-      frame = mapReference(frame);
-      msg += '  at ' + frame.source + ':' + frame.line + ':' + frame.column + '\n';
+      var lookup = mapReference(frame);
+      if (lookup) {
+        msg += '  at' + (lookup.name ? ' ' + lookup.name : '') + ' (' + lookup.source + (lookup.line ? ':' + lookup.line : '') + (lookup.column ? ':' + lookup.column : '') + ')\n';
+      } else {
+        msg += frame + '\n';
+      }
     }
   }
   return msg;
