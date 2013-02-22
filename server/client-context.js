@@ -43,6 +43,12 @@ function mapReference(pathRef) {
   }
 }
 function processError(err) {
+  if (err.clientProcessed) {
+    return;
+  }
+
+  err.clientProcessed = true;
+
   var stack = err.stack,
       map = mapReference(stack);
 
