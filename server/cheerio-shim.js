@@ -6,7 +6,14 @@ Cheerio.prototype.delegate = function() {
   return this;
 };
 
-Cheerio.prototype.forEach = Cheerio.prototype.each;
+Cheerio.prototype.get = Cheerio.prototype.eq;
+Cheerio.prototype.forEach = function(callback, scope) {
+  var elements = this;
+  elements.each(function(index) {
+    callback.call(scope || elements, this, index);
+  });
+};
+
 Cheerio.prototype.toggleClass = function(className, toggle) {
   if (toggle === undefined) {
     toggle = !this.hasClass(className);
