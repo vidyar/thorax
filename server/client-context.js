@@ -33,11 +33,13 @@ module.exports = exports = function(files) {
 
 function mapReference(pathRef) {
   try {
-    var match = /^\s+at (?:.*? \((.*?)\)|(.*?))$/m.exec(pathRef),
-        location = match && (match[1] || match[2]),
+    var match = /^\s+at (?:(.*?) \((.*?)\)|(.*?))$/m.exec(pathRef),
+        location = match && (match[2] || match[3]),
         components = location.split(/:/g);
 
-    return sourceMap.map(components[0], parseInt(components[1], 10), parseInt(components[2], 10));
+    var map = sourceMap.map(components[0], parseInt(components[1], 10), parseInt(components[2], 10));
+    map.name = match[1];
+    return map;
   } catch (err) {
     /* NOP */
   }
