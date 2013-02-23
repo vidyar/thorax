@@ -1,5 +1,17 @@
 var Cheerio = require('cheerio');
 
+var $make = Cheerio.prototype.make;
+
+Cheerio.prototype.make = function(dom, context) {
+  var ret = $make.call(this, dom, context);
+
+  ret.__defineSetter__('innerHTML', function(html) {
+    this.html(html || '');
+  });
+
+  return ret;
+};
+
 Cheerio.prototype.bind = Cheerio.prototype.unbind =
 Cheerio.prototype.on = Cheerio.prototype.off =
 Cheerio.prototype.delegate = function() {
