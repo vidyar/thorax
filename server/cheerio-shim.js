@@ -14,6 +14,10 @@ Cheerio.prototype.forEach = function(callback, scope) {
   });
 };
 
+Cheerio.prototype.getAttribute = function(name) {
+  return this.attr(name);
+};
+
 Cheerio.prototype.toggleClass = function(className, toggle) {
   if (toggle === undefined) {
     toggle = !this.hasClass(className);
