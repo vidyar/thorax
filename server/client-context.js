@@ -130,20 +130,21 @@ function processError(err) {
   err.clientProcessed = true;
 
   var stack = err.stack,
-      map = mapReference(stack);
+      map = mapReference(stack),
+      fileLines = '';
 
   if (map) {
     try {
-      var fileLines = fileContext(map.source, map.line);
-
-      stack = stack.split(/\n/);
-      var msg = stack.shift() + '\n' + fileLines + '\n';
-
-      err.message = msg;
-      err.stack = msg + stackContext(stack);
+      fileLines = fileContext(map.source, map.line) + '\n';
     } catch (err) {
       /* NOP */
     }
+
+    stack = stack.split(/\n/);
+    var msg = stack.shift() + '\n' + fileLines;
+
+    err.message = msg;
+    err.stack = msg + stackContext(stack);
   }
 }
 
@@ -166,13 +167,13 @@ function fileContext(file, line) {
 }
 function stackContext(stack) {
   var msg = '',
-      seenClient;
+      seenClient = true;
   for (var i = 0; i < stack.length; i++) {
     var frame = stack[i];
     if (frame.indexOf('client-context.js') >= 0) {
       // Don't include anything more than the code we called
       if (seenClient) {
-        msg += '  at <native>\n';
+        msg += '  at (native)\n';
         seenClient = false;
       }
     } else {
