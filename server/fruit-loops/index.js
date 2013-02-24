@@ -2,7 +2,7 @@ var ajax = require('./ajax'),
     Cheerio = require('cheerio'),
     detect = require('./detect');
 
-require('../cheerio-shim');
+require('./cheerio-shim');
 
 // TODO : For testing run the zepto tests (that apply) against the output
 module.exports = exports = function(window, html, exec) {
