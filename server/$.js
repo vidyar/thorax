@@ -1,5 +1,5 @@
 var ajax = require('./fruit-loops/ajax'),
-    Cheerio = require('cheerio');
+    Cheerio = require('cheerio'),
     detect = require('./fruit-loops/detect');
 
 require('./cheerio-shim');
