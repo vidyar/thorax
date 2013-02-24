@@ -1,4 +1,5 @@
-var Cheerio = require('cheerio');
+var ajax = require('./fruit-loops/ajax'),
+    Cheerio = require('cheerio');
 
 require('./cheerio-shim');
 
@@ -21,19 +22,12 @@ module.exports = exports = function(html, exec) {
   // TODO : Proper user agent parsing
   $.os = {};
 
-  $.ajax = function(options) {
-    // TODO : Implement
-    exec(function() {
-      options.success({}, 'success', {});
-      options.complete();
-    });
-  };
 
   $.fn = Cheerio.prototype;
 
   return {
     $: $,
     root: root,
-    ajax: ajax
+    ajax: ajax($, exec)
   };
 };
