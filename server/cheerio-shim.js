@@ -30,6 +30,30 @@ Cheerio.prototype.getAttribute = function(name) {
   return this.attr(name);
 };
 
+Cheerio.prototype.val = function(value) {
+  // TODO : Special case for non-text inputs
+  return this.attr('value', value);
+};
+
+Cheerio.prototype.css = function(name, value) {
+  // TODO : Implement
+};
+Cheerio.prototype.toggle = function(toggle) {
+  if (toggle === undefined) {
+    toggle = this.css('display') !== 'none';
+  }
+
+  this[toggle ? 'show' : 'hide']();
+  return this;
+};
+Cheerio.prototype.show = function() {
+  this.css('display', 'none');
+  return this;
+};
+Cheerio.prototype.hide = function() {
+  this.css('display', '');
+  return this;
+};
 Cheerio.prototype.toggleClass = function(className, toggle) {
   if (toggle === undefined) {
     toggle = !this.hasClass(className);
