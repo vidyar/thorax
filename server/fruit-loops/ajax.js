@@ -1,8 +1,9 @@
 var _ = require('underscore'),
     Events = require('events'),
+    exec = require('../client-exec').exec,
     request = require('request');
 
-module.exports = function($, exec) {
+module.exports = function($) {
   var ajax = new Events.EventEmitter(),
       log = {};
 
