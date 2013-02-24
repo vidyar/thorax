@@ -1,9 +1,7 @@
-var clientConsole = require('./dom/console'),
-    document = require('./dom/document'),
+var dom = require('./dom'),
     exec = require('./client-exec').exec,
     fs = require('fs'),
     jQuery = require('./fruit-loops'),
-    location = require('./dom/location'),
     path = require('path'),
     vm = require('vm');
 
@@ -44,9 +42,9 @@ module.exports = exports = function(index) {
   });
   window.self = window.window = window;
 
-  document(window);
-  clientConsole(window);
-  location(window, 'http://localhost:8080/home/register/1234');
+  dom.console(window);
+  dom.document(window);
+  dom.location(window, 'http://localhost:8080/home/register/1234');
 
   var $ = jQuery(window, fs.readFileSync(index));
   window.jQuery = window.Zepto = window.$ = $.$;
