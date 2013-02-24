@@ -1,7 +1,5 @@
-var _ = require('underscore'),
-    clientExec = require('./client-exec'),
-      exec = clientExec.exec,
-      rewriteStack = clientExec.rewriteStack,
+var clientConsole = require('./dom/console'),
+    exec = require('./client-exec').exec,
     fs = require('fs'),
     jQuery = require('./fruit-loops'),
     location = require('./dom/location'),
@@ -44,20 +42,6 @@ module.exports = exports = function(index) {
       }
     },
 
-    console: {
-      log: function() {
-        var args = _.map(arguments, function(arg) {
-          if (arg && arg.split) {
-            arg = rewriteStack(arg.split(/\n/g));
-          }
-          return arg;
-        });
-        console.log.apply(console, args);
-      },
-      error: function() {
-        window.console.log.apply(this, arguments);
-      }
-    },
     document: {
       get body() {
         return $.$('body')[0];
@@ -74,6 +58,7 @@ module.exports = exports = function(index) {
   window.self = window.window = window;
   window.document.defaultView = window;
 
+  clientConsole(window);
   location(window, 'http://localhost:8080/home/register/1234');
 
   var $ = jQuery(window, fs.readFileSync(index));
