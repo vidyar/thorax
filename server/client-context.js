@@ -1,6 +1,6 @@
 var _ = require('underscore'),
     fs = require('fs'),
-    jQuery = require('./$'),
+    jQuery = require('./fruit-loops'),
     location = require('./dom/location'),
     path = require('path'),
     printf = require('printf'),
