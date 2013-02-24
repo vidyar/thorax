@@ -18,8 +18,6 @@ module.exports = exports = function(html, exec) {
     return root(selector, context);
   }
 
-  $.root = root;
-
   // TODO : Proper user agent parsing
   $.os = {};
 
@@ -30,7 +28,12 @@ module.exports = exports = function(html, exec) {
       options.complete();
     });
   };
+
   $.fn = Cheerio.prototype;
 
-  return $;
+  return {
+    $: $,
+    root: root,
+    ajax: ajax
+  };
 };

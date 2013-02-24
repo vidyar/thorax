@@ -20,7 +20,7 @@ module.exports = exports = function(index) {
   var $ = jQuery(fs.readFileSync(index), exec);
 
   var window = {
-    $: $,
+    $: $.$,
 
     $server: true,
     nextTick: function(callback) {
@@ -77,14 +77,14 @@ module.exports = exports = function(index) {
     },
     document: {
       get body() {
-        return $('body')[0];
+        return $.$('body')[0];
       },
 
       querySelector: function(selector) {
-        return $(selector)[0];
+        return $.$(selector)[0];
       },
       createElement: function(tagName) {
-        return $('<' + tagName + '>');
+        return $.$('<' + tagName + '>');
       }
     }
   };
@@ -94,10 +94,11 @@ module.exports = exports = function(index) {
 
   var context = this.context = vm.createContext(window);
 
-  var files = $('script');
+  var files = $.$('script');
   files.each(function() {
-    var text = $(this).text(),
-        external = $(this).attr('src');
+    var el = $.$(this),
+        text = el.text(),
+        external = el.attr('src');
 
     if (external) {
       window.loadInContext(external);
