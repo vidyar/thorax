@@ -5,7 +5,7 @@ var ajax = require('./fruit-loops/ajax'),
 require('./cheerio-shim');
 
 // TODO : For testing run the zepto tests (that apply) against the output
-module.exports = exports = function(html, exec) {
+module.exports = exports = function(window, html, exec) {
   var root = Cheerio.load(html);
 
   function $(selector, context) {

@@ -17,11 +17,8 @@ module.exports = exports = function(index) {
       throw err;
     }
   }
-  var $ = jQuery(fs.readFileSync(index), exec);
 
-  var window = {
-    $: $.$,
-
+  var window = vm.createContext({
     $server: true,
     nextTick: function(callback) {
       process.nextTick(function() { exec(callback); });
@@ -29,7 +26,7 @@ module.exports = exports = function(index) {
 
     getComputedStyle: function() {},
     navigator: {
-      userAgent: 'TODO : Whatever the user sent'
+      userAgent: 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7'
     },
 
     sessionStorage: {
@@ -47,13 +44,13 @@ module.exports = exports = function(index) {
     },
 
     loadInContext: function(href, callback) {
-      if (href && context.lumbarLoadPrefix) {
-        href = path.relative(context.lumbarLoadPrefix, href);
+      if (href && window.lumbarLoadPrefix) {
+        href = path.relative(window.lumbarLoadPrefix, href);
         href = path.resolve(path.dirname(index) + '/web', href);
       }
 
       exec(function() {
-        vm.runInContext(fs.readFileSync(href), context, href);
+        vm.runInContext(fs.readFileSync(href), window, href);
       });
 
       if (callback) {
@@ -87,12 +84,12 @@ module.exports = exports = function(index) {
         return $.$('<' + tagName + '>');
       }
     }
-  };
-  window.jQuery = window.Zepto = window.$;
+  });
   window.self = window.window = window;
   window.document.defaultView = window;
 
-  var context = this.context = vm.createContext(window);
+  var $ = jQuery(window, fs.readFileSync(index), exec);
+  window.jQuery = window.Zepto = window.$ = $.$;
 
   var files = $.$('script');
   files.each(function() {
@@ -104,7 +101,7 @@ module.exports = exports = function(index) {
       window.loadInContext(external);
     } else {
       exec(function() {
-        vm.runInContext(text, context, text);
+        vm.runInContext(text, window, text);
       });
     }
   }, this);
