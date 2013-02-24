@@ -1,4 +1,5 @@
 var clientConsole = require('./dom/console'),
+    document = require('./dom/document'),
     exec = require('./client-exec').exec,
     fs = require('fs'),
     jQuery = require('./fruit-loops'),
@@ -39,24 +40,11 @@ module.exports = exports = function(index) {
       if (callback) {
         window.nextTick(callback);
       }
-    },
-
-    document: {
-      get body() {
-        return $.$('body')[0];
-      },
-
-      querySelector: function(selector) {
-        return $.$(selector)[0];
-      },
-      createElement: function(tagName) {
-        return $.$('<' + tagName + '>');
-      }
     }
   });
   window.self = window.window = window;
-  window.document.defaultView = window;
 
+  document(window);
   clientConsole(window);
   location(window, 'http://localhost:8080/home/register/1234');
 
