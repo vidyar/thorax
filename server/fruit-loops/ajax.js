@@ -1,12 +1,21 @@
-var Events = require('events'),
+var _ = require('underscore'),
+    Events = require('events'),
     request = require('request');
 
 module.exports = function($, exec) {
-  var ajax = new Events.EventEmitter();
-  ajax.log = {};
+  var ajax = new Events.EventEmitter(),
+      log = {};
+
+  ajax.toJSON = function() {
+    return JSON.stringify(log);
+  };
+  ajax.allComplete = function() {
+    return _.any(_.values(log), function(value) { return value === null; });
+  };
+
   $.ajax = function(options) {
     console.log(options.url);
-    ajax.log[options.url] = null;
+    log[options.url] = null;
     request({
         method: options.type || 'GET',
         url: options.url,
@@ -32,7 +41,7 @@ module.exports = function($, exec) {
           } finally {
             options.complete();
 
-            ajax.log[options.url] = body || false;
+            log[options.url] = body || false;
             ajax.emit('complete');
           }
         });
