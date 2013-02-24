@@ -1,6 +1,7 @@
 var _ = require('underscore'),
     fs = require('fs'),
     jQuery = require('./$'),
+    location = require('./dom/location'),
     path = require('path'),
     printf = require('printf'),
     sourceMap = require('./source-map'),
@@ -36,11 +37,6 @@ module.exports = exports = function(index) {
     localStorage: {
       getItem: function() {
       }
-    },
-    location: {
-      // TODO : Implement
-      href: 'http://localhost:8080/#home',
-      pathname: '/'
     },
 
     loadInContext: function(href, callback) {
@@ -87,6 +83,8 @@ module.exports = exports = function(index) {
   });
   window.self = window.window = window;
   window.document.defaultView = window;
+
+  location(window, 'http://localhost:8080/home/register/1234');
 
   var $ = jQuery(window, fs.readFileSync(index), exec);
   window.jQuery = window.Zepto = window.$ = $.$;
