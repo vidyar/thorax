@@ -3,9 +3,10 @@
 //     (c) 2010-2012 Thomas Fuchs
 //     Zepto.js may be freely distributed under the MIT license.
 
-module.exports = function($, ua){
+module.exports = function($, window){
   var os = $.os = {},
       browser = $.browser = {},
+      ua = window.navigator.userAgent,
 
     webkit = ua.match(/WebKit\/([\d.]+)/),
     android = ua.match(/(Android)\s+([\d.]+)/),
