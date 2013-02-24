@@ -42,10 +42,6 @@ Cheerio.prototype.toggleClass = function(className, toggle) {
   return this;
 };
 
-Cheerio.prototype.focus = function() {
-  return this;
-};
-
 
 Cheerio.prototype.ready = function(callback) {
   callback();
