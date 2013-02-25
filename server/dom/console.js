@@ -13,7 +13,7 @@ module.exports = function(window) {
 };
 
 function mapArgs(args) {
-  return _.map(arguments, function(arg) {
+  return _.map(args, function(arg) {
     if (arg && arg.split) {
       arg = rewriteStack(arg);
     }
