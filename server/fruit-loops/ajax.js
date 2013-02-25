@@ -11,7 +11,7 @@ module.exports = function($) {
     return JSON.stringify(log);
   };
   ajax.allComplete = function() {
-    return _.any(_.values(log), function(value) { return value === null; });
+    return !_.any(_.values(log), function(value) { return value === null; });
   };
 
   $.ajax = function(options) {
