@@ -4,7 +4,7 @@
   "mixins": {
     "thorax-dep-jquery": {
       "scripts": [
-        {"src": "lib/jquery.js", "global": true, "ignoreWarnings": true},
+        {"src": "lib/jquery.js", "global": true, "ignoreWarnings": true, "server": false},
         {"src": "lib/underscore.js", "global": true, "ignoreWarnings": true},
         {"src": "lib/backbone.js", "global": true, "ignoreWarnings": true},
         {"src": "lib/handlebars.js", "global": true, "ignoreWarnings": true},
@@ -12,7 +12,7 @@
     },
     "thorax-dep-zepto": {
       "scripts": [
-        {"src": "lib/zepto.js", "global": true, "ignoreWarnings": true},
+        {"src": "lib/zepto.js", "global": true, "ignoreWarnings": true, "server": false},
         {"src": "lib/underscore.js", "global": true, "ignoreWarnings": true},
         {"src": "lib/backbone.js", "global": true, "ignoreWarnings": true},
         {"src": "lib/handlebars.runtime.js", "global": true, "ignoreWarnings": true},
@@ -63,8 +63,8 @@
 
     "thorax-mobile": {
       "scripts": [
-        {"src": "src/mobile.js"},
-        {"src": "src/mobile/tap-highlight.js"}
+        {"src": "src/mobile.js", "server": false},
+        {"src": "src/mobile/tap-highlight.js", "server": false}
       ]
     }
   },
