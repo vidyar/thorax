@@ -71,8 +71,12 @@ Thorax.View = Backbone.View.extend({
     }, this);
   },
 
-  setElement : function() {
-    var response = Backbone.View.prototype.setElement.apply(this, arguments);
+  setElement : function(element, delegate) {
+    delegate = delegate && !$server;
+
+    var response = Backbone.View.prototype.setElement.call(this, element, delegate);
+    this.el = this.$el.eq(0);   // Override backbone for proper server support
+
     this.name && this.$el.attr(viewNameAttributeName, this.name);
     this.$el.attr(viewCidAttributeName, this.cid);
     return response;
