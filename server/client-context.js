@@ -35,6 +35,15 @@ module.exports = exports = function(index) {
         vm.runInContext(fs.readFileSync(href), window, href);
       });
 
+      // TODO : Make this generic, i.e. allow names other than `Phoenix`
+      if (window.Phoenix && !changeRegistered) {
+        changeRegistered = true;
+        window.Phoenix.on('change:view:end', function() {
+          viewSet = true;
+          emit();
+        });
+      }
+
       if (callback) {
         window.nextTick(callback);
       }
@@ -48,6 +57,26 @@ module.exports = exports = function(index) {
 
   var $ = jQuery(window, fs.readFileSync(index));
   window.jQuery = window.Zepto = window.$ = $.$;
+
+  var changeRegistered,
+      viewSet = false;
+
+  function emit() {
+    // TODO : Detect the error page and handle appropriately
+    // TODO : Reconsider the loading flag for the loading state (vs. active ajax).
+    //      If we do that then we will need to provide an opt out mechanism.
+    if (!viewSet || !$.ajax.allComplete()) {
+      // Operations are still pending, don't push anything out just yet
+      return;
+    }
+
+    // Inline any script content that we may have received
+    $.$('script').eq(0).before('<script>var $serverCache = ' + $.ajax.toJSON() + ';</script>');
+
+    // And output the thing
+    console.log($.root.html());
+  }
+  $.ajax.on('complete', emit);
 
   var files = $.$('script');
   files.each(function() {
