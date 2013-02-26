@@ -11,6 +11,10 @@ Thorax.setRootObject = function(obj) {
 Thorax.loadHandler = function(start, end, context) {
   var loadCounter = _.uniqueId();
   return function(message, background, object) {
+    if ($server) {
+      return;
+    }
+
     var self = context || this;
     self._loadInfo = self._loadInfo || [];
     var loadInfo = self._loadInfo[loadCounter];

@@ -2,7 +2,10 @@
   "name": "thorax",
   "version": "2.0.0rc3",
   "description": "Handlebars + Backbone",
-  "keywords": ["backbone", "handlebars"],
+  "keywords": [
+    "backbone",
+    "handlebars"
+  ],
   "homepage": "http://thoraxjs.org",
   "authors": [
     "Ryan Eastridge <ryan@eastridge.me> (http://eastridge.me)",
@@ -23,5 +26,12 @@
   },
   "scripts": {
     "test": "./node_modules/.bin/jake test"
+  },
+  "dependencies": {
+    "request": "~2.14.0",
+    "cheerio": "~0.10.7",
+    "source-map": "~0.1.8",
+    "temp": "~0.5.0",
+    "printf": "~0.1.1"
   }
 }

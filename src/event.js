@@ -164,6 +164,9 @@ function bindEventHandler(eventName, params) {
     try {
       method.apply(this, arguments);
     } catch (e) {
+      if ($server) {
+        throw e;
+      }
       Thorax.onException('thorax-exception: ' + (this.name || this.cid) + ':' + eventName, e);
     }
   }, params.context || this);
