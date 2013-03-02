@@ -1,5 +1,10 @@
 /*global cloneInheritVars, createInheritVars, createRegistryWrapper, getValue, inheritVars */
 
+// Provide default behavior for client-failover
+if (typeof $server === 'undefined') {
+  window.$server = false;
+}
+
 //support zepto.forEach on jQuery
 if (!$.fn.forEach) {
   $.fn.forEach = function(iterator, context) {
