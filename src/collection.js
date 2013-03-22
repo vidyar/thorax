@@ -107,18 +107,23 @@ Thorax.CollectionView = Thorax.View.extend({
       if (_.isString(itemView) && !itemView.match(/^\s*</m)) {
         itemView = '<div>' + itemView + '</div>';
       }
-      var itemElement = itemView.el ? [itemView.el] : _.filter($(itemView), function(node) {
+      var itemElement = itemView.el ? [itemView.el] : _.filter($($.trim(itemView)), function(node) {
         //filter out top level whitespace nodes
-        return node.nodeType === ELEMENT_NODE_TYPE;
+        // TODO : Revaluate the cheerio implementation for type vs. nodeType
+        return node.nodeType === ELEMENT_NODE_TYPE || node.type === 'tag';
       });
-      model && $(itemElement).attr(modelCidAttributeName, model.cid);
-      var previousModel = index > 0 ? this.collection.at(index - 1) : false;
+
+      var $itemElement = $(itemElement),
+          previousModel = index > 0 ? this.collection.at(index - 1) : false;
+      if (model) {
+        $itemElement.attr(modelCidAttributeName, model.cid);
+      }
       if (!previousModel) {
-        $el.prepend(itemElement);
+        $el.prepend($itemElement);
       } else {
         //use last() as appendItem can accept multiple nodes from a template
         var last = $el.children('[' + modelCidAttributeName + '="' + previousModel.cid + '"]').last();
-        last.after(itemElement);
+        last.after($itemElement);
       }
 
       this.trigger('append', null, function(el) {

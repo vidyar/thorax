@@ -5,7 +5,10 @@ var dom = require('./dom'),
     path = require('path'),
     vm = require('vm');
 
-module.exports = exports = function(index) {
+module.exports = exports = function(options) {
+  var host = options.host || 'localhost',
+      callback = options.callback;
+
   var window = vm.createContext({
     $server: true,
     nextTick: function(callback) {
@@ -13,22 +16,14 @@ module.exports = exports = function(index) {
     },
 
     navigator: {
-      userAgent: 'Mozilla/5.0 (iPhone; U; CPU iPhone OS 4_0 like Mac OS X; en-us) AppleWebKit/532.9 (KHTML, like Gecko) Version/4.0.5 Mobile/8A293 Safari/6531.22.7'
-    },
-
-    sessionStorage: {
-      getItem: function() {
-      }
-    },
-    localStorage: {
-      getItem: function() {
-      }
+      userAgent: options.userAgent
     },
 
     loadInContext: function(href, callback) {
       if (href && window.lumbarLoadPrefix) {
-        href = path.relative(window.lumbarLoadPrefix, href);
-        href = path.resolve(path.dirname(index) + '/web', href);
+        // TODO : Make this more generic (i.e. don't expect a sha in there)
+        href = path.relative(path.dirname(window.lumbarLoadPrefix), href);
+        href = path.resolve(path.dirname(options.index) + '/web', href);
       }
 
       exec(function() {
@@ -53,15 +48,23 @@ module.exports = exports = function(index) {
 
   dom.console(window);
   dom.document(window);
-  dom.location(window, 'http://localhost:8080/home/register/1234');
+  dom.location(window, 'http://' + host + options.url.path);
+  dom.history(window);
+  dom.storage(window, 'localStorage');
+  dom.storage(window, 'sessionStorage');
 
-  var $ = jQuery(window, fs.readFileSync(index));
+  var $ = jQuery(window, fs.readFileSync(options.index));
   window.jQuery = window.Zepto = window.$ = $.$;
 
   var changeRegistered,
       viewSet = false;
 
   function emit() {
+    // TODO : Figure put the best way to handle output after send... Error? Ignore? Log?
+    if (!callback) {
+      console.log($.root.html());
+      return;
+    }
     // TODO : Detect the error page and handle appropriately
     // TODO : Reconsider the loading flag for the loading state (vs. active ajax).
     //      If we do that then we will need to provide an opt out mechanism.
@@ -71,10 +74,16 @@ module.exports = exports = function(index) {
     }
 
     // Inline any script content that we may have received
-    $.$('script').eq(0).before('<script>var $serverCache = ' + $.ajax.toJSON() + ';</script>');
+    $.$('body').append('<script>var $serverCache = ' + $.ajax.toJSON() + ';</script>');
+
+    // Ensure sure that we have all of our script content and that it it at the end of the document
+    // this has two benefits: the body element may be rendered to directly and this will push
+    // all of the scripts after the content elements
+    $.$('body').append(files);
 
     // And output the thing
-    console.log($.root.html());
+    callback(undefined, $.root.html());
+    callback = undefined;
   }
   $.ajax.on('complete', emit);
 
@@ -85,11 +94,11 @@ module.exports = exports = function(index) {
         external = el.attr('src');
 
     if (external) {
-      window.loadInContext(external);
+      window.loadInContext(external.replace(/\.js$/, '-server.js'));
     } else {
       exec(function() {
         vm.runInContext(text, window, text);
       });
     }
-  }, this);
+  });
 };

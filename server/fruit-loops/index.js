@@ -20,6 +20,8 @@ module.exports = exports = function(window, html) {
     return root(selector, context);
   }
 
+  $.trim = function(str) { return str.trim(); };
+
   detect($, window);
 
   $.fn = Cheerio.prototype;
