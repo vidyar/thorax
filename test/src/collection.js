@@ -260,21 +260,22 @@ describe('collection', function() {
     expect(view.$('li').eq(0).html()).to.equal('d');
   });
 
-  it("bindDataObject or model.set can be called in context()", function() {
+  it("nested render should throw", function() {
     //this causes recursion
-    var view = new Thorax.View({
-      model: new Thorax.Model(),
-      template: Handlebars.compile('{{key}}{{#collection col}}{{key}}{{/collection}}'),
-      context: function() {
-        this.model.set({key: 'value'});
-        return {
-          key: 'value',
-          col: new Thorax.Collection([{key: 'value'}])
-        };
-      }
-    });
-    view.render();
-    expect(view.$('[data-collection-cid] div')[0].innerHTML).to.equal('value');
+    function doNestedRender() {
+      var view = new Thorax.View({
+        model: new Thorax.Model(),
+        template: Handlebars.compile('{{key}}{{#collection col}}{{key}}{{/collection}}'),
+        context: function() {
+          this.model.set({key: 'value'});
+          return {
+            key: 'value',
+            col: new Thorax.Collection([{key: 'value'}])
+          };
+        }
+      });
+    }
+    expect(doNestedRender).to.throw(Error);
   });
 
   it("filter what items are rendered in a collection", function() {

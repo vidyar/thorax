@@ -267,7 +267,7 @@ describe('loading', function() {
     it('pair with timeout registers', function() {
       this.object.loadStart('foo', false);
       this.clock.tick(1000);
-      var loaderWrapper = this.object._loadInfo[this.object._loadInfo.length - 1];
+      var loaderWrapper = _.last(_.values(this.object._loadInfo));
 
       this.object.loadEnd();
       this.clock.tick(1000);
@@ -279,7 +279,7 @@ describe('loading', function() {
     it('consequtive pairs emit one event', function() {
       this.object.loadStart('foo', false);
       this.clock.tick(1000);
-      var loaderWrapper = this.object._loadInfo[this.object._loadInfo.length - 1];
+      var loaderWrapper = _.last(_.values(this.object._loadInfo));
 
       this.object.loadEnd();
       this.clock.tick(10);
@@ -299,7 +299,7 @@ describe('loading', function() {
     it('consequtive pairs emit two events after timeout', function() {
       this.object.loadStart('foo', false);
       this.clock.tick(1000);
-      var loaderWrapper = this.object._loadInfo[this.object._loadInfo.length - 1];
+      var loaderWrapper = _.last(_.values(this.object._loadInfo));
 
       this.object.loadEnd();
       this.clock.tick(1000);
@@ -309,7 +309,7 @@ describe('loading', function() {
 
       this.object.loadStart('bar', true);
       this.clock.tick(1000);
-      var loaderWrapper2 = this.object._loadInfo[this.object._loadInfo.length - 1];
+      var loaderWrapper2 = _.last(_.values(this.object._loadInfo));
 
       this.object.loadEnd();
       this.clock.tick(1000);
@@ -321,7 +321,7 @@ describe('loading', function() {
     it('overlapping pairs emit one event', function() {
       this.object.loadStart('foo', false);
       this.clock.tick(1000);
-      var loaderWrapper = this.object._loadInfo[this.object._loadInfo.length - 1];
+      var loaderWrapper = _.last(_.values(this.object._loadInfo));
 
       this.object.loadStart('bar', true);
       this.clock.tick(1000);
@@ -332,6 +332,28 @@ describe('loading', function() {
       this.object.loadEnd();
       this.clock.tick(1000);
       this.object.loadEnd();
+      this.clock.tick(1000);
+
+      expect(this.loads).to.eql([{msg: 'foo', background: false, model: loaderWrapper}]);
+      expect(this.ends).to.eql([{background: false, model: loaderWrapper}]);
+    });
+
+    it('forwarded events emit one event', function() {
+      var object = _.extend({}, Backbone.Events);
+      Thorax.mixinLoadableEvents(object);
+
+      Thorax.forwardLoadEvents(object, this.object);
+      Thorax.forwardLoadEvents(object, this.object);
+      Thorax.forwardLoadEvents(object, this.object);
+
+      object.loadStart('foo', false);
+      this.clock.tick(1000);
+      var loaderWrapper = _.last(_.values(this.object._loadInfo));
+
+      expect(this.loads).to.eql([{msg: 'foo', background: false, model: loaderWrapper}]);
+      expect(this.ends).to.eql([]);
+
+      object.loadEnd();
       this.clock.tick(1000);
 
       expect(this.loads).to.eql([{msg: 'foo', background: false, model: loaderWrapper}]);
@@ -594,8 +616,10 @@ describe('loading', function() {
 
       this.model.isPopulated = function() { return true; };
       this.model.load(success, failback);
-      expect(this.requests).to.be.empty;
 
+      this.clock.tick(10);
+
+      expect(this.requests).to.be.empty;
       expect(success).to.have.been.calledOnce;
       expect(failback).to.not.have.been.called;
       expect(rootStart).to.not.have.been.called;

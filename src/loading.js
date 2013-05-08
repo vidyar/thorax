@@ -9,14 +9,14 @@ Thorax.setRootObject = function(obj) {
 };
 
 Thorax.loadHandler = function(start, end, context) {
-  var loadCounter = _.uniqueId();
+  var loadCounter = _.uniqueId('load');
   return function(message, background, object) {
     if ($server) {
       return;
     }
 
     var self = context || this;
-    self._loadInfo = self._loadInfo || [];
+    self._loadInfo = self._loadInfo || {};
     var loadInfo = self._loadInfo[loadCounter];
 
     function startLoadTimeout() {
@@ -42,6 +42,11 @@ Thorax.loadHandler = function(start, end, context) {
 
     if (!loadInfo) {
       loadInfo = self._loadInfo[loadCounter] = _.extend({
+        isLoading: function() {
+          return loadInfo.events.length;
+        },
+
+        cid: loadCounter,
         events: [],
         timeout: 0,
         message: message,
@@ -61,7 +66,6 @@ Thorax.loadHandler = function(start, end, context) {
     // Prevent binds to the same object multiple times as this can cause very bad things
     // to happen for the load;load;end;end execution flow.
     if (loadInfo.events.indexOf(object) >= 0) {
-      loadInfo.events.push(object);
       return;
     }
 
@@ -76,7 +80,7 @@ Thorax.loadHandler = function(start, end, context) {
 
       var events = loadInfo.events,
           index = events.indexOf(object);
-      if (index >= 0) {
+      if (index >= 0 && !object.isLoading()) {
         events.splice(index, 1);
 
         if (events.indexOf(object) < 0) {
@@ -90,9 +94,7 @@ Thorax.loadHandler = function(start, end, context) {
         loadInfo.endTimeout = setTimeout(function() {
           try {
             if (!events.length) {
-              var run = loadInfo.run;
-
-              if (run) {
+              if (loadInfo.run) {
                 // Emit the end behavior, but only if there is a paired start
                 end.call(self, loadInfo.background, loadInfo);
                 loadInfo.trigger(loadEnd, loadInfo);
@@ -160,7 +162,7 @@ Thorax.mixinLoadable = function(target, useParent) {
       that._isLoading = true;
       $(that.el).addClass(that._loadingClassName);
       // used by loading helpers
-      that.trigger('change:load-state', 'start');
+      that.trigger('change:load-state', 'start', background);
     },
     onLoadEnd: function(/* background, object */) {
       var that = useParent ? this.parent : this;
@@ -180,11 +182,21 @@ Thorax.mixinLoadable = function(target, useParent) {
 
 Thorax.mixinLoadableEvents = function(target, useParent) {
   _.extend(target, {
+    _loadCount: 0,
+
+    isLoading: function() {
+      return this._loadCount > 0;
+    },
+
     loadStart: function(message, background) {
+      this._loadCount++;
+
       var that = useParent ? this.parent : this;
       that.trigger(loadStart, message, background, that);
     },
     loadEnd: function() {
+      this._loadCount--
+
       var that = useParent ? this.parent : this;
       that.trigger(loadEnd, that);
     }
@@ -252,7 +264,7 @@ function bindToRoute(callback, failback) {
 
 function loadData(callback, failback, options) {
   if (this.isPopulated()) {
-    return callback(this);
+    return _.defer(callback, this);
   }
 
   if (arguments.length === 2 && !_.isFunction(failback) && _.isObject(failback)) {
@@ -297,7 +309,10 @@ function fetchQueue(options, $super) {
       error: flushQueue(this, this.fetchQueue, 'error'),
       complete: flushQueue(this, this.fetchQueue, 'complete')
     }, options);
-    $super.call(this, options);
+    if ($super) {
+      $super.call(this, options);
+    }
+    return options;
   } else {
     // Currently fetching. Queue and process once complete
     this.fetchQueue.push(options);
