@@ -65,7 +65,7 @@ Thorax.loadHandler = function(start, end, context) {
 
     // Prevent binds to the same object multiple times as this can cause very bad things
     // to happen for the load;load;end;end execution flow.
-    if (loadInfo.events.indexOf(object) >= 0) {
+    if (_.indexOf(loadInfo.events, object) >= 0) {
       return;
     }
 
@@ -79,11 +79,11 @@ Thorax.loadHandler = function(start, end, context) {
       }
 
       var events = loadInfo.events,
-          index = events.indexOf(object);
+          index = _.indexOf(events, object);
       if (index >= 0 && !object.isLoading()) {
         events.splice(index, 1);
 
-        if (events.indexOf(object) < 0) {
+        if (_.indexOf(events, object) < 0) {
           // Last callback for this particlar object, remove the bind
           object.off(loadEnd, endCallback);
         }
@@ -264,6 +264,7 @@ function bindToRoute(callback, failback) {
 
 function loadData(callback, failback, options) {
   if (this.isPopulated()) {
+    // Defer here to maintain async callback behavior for all loading cases
     return _.defer(callback, this);
   }
 
@@ -309,6 +310,9 @@ function fetchQueue(options, $super) {
       error: flushQueue(this, this.fetchQueue, 'error'),
       complete: flushQueue(this, this.fetchQueue, 'complete')
     }, options);
+
+    // Handle callers that do not pass in a super class and wish to implement their own
+    // fetch behavior
     if ($super) {
       $super.call(this, options);
     }
