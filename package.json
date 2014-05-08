@@ -28,6 +28,6 @@
     "grunt-release-component": "0.0.3"
   },
   "scripts": {
-    "test": "make test"
+    "test": "./node_modules/.bin/jake test"
   }
 }
