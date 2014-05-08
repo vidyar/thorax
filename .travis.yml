@@ -13,6 +13,6 @@ before_script:
   - npm install xunit-file
   - npm install istanbul
 script:
-  - "mkdir -p shippable/testresults && XUNIT_FILE=shippable/testresults/result.xml ./node_modules/mocha/bin/_mocha --timeout 5000 --reporter=xunit-file tests/**/*.js"
+  - "mkdir -p shippable/testresults && XUNIT_FILE=shippable/testresults/result.xml ./node_modules/mocha/bin/_mocha --timeout 5000 --reporter=xunit-file test/**/*.js"
 after_script:
-  - "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --timeout 5000 tests/**/*.js && ./node_modules/.bin/istanbul report cobertura -dir shippable/codecoverage"
+  - "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --timeout 5000 test/**/*.js && ./node_modules/.bin/istanbul report cobertura -dir shippable/codecoverage"
