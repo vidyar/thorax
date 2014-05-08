@@ -3,7 +3,7 @@ node_js:
   - 0.10
 
 
-
+ 
 before_script:
   - "./node_modules/bower/bin/bower install"
   - "export DISPLAY=:99.0" 
@@ -12,7 +12,12 @@ before_script:
   - sleep 5
   - npm install xunit-file
   - npm install istanbul
+  - mkdir -p shippable/codecoverage
+
 #script:
- # - "mkdir -p shippable/testresults && XUNIT_FILE=shippable/testresults/result.xml ./node_modules/mocha/bin/_mocha --timeout 5000 --reporter=xunit-file test/src/*.js"
+# - "mkdir -p shippable/testresults && XUNIT_FILE=shippable/testresults/result.xml ./node_modules/mocha/bin/_mocha --timeout 5000 --reporter=xunit-file test/src/*.js"
 #after_script:
  # - "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --timeout 5000 test/src/*.js && ./node_modules/.bin/istanbul report cobertura -dir shippable/codecoverage"
+after_script: 
+  - ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -u tdd 
+  - ./node_modules/.bin/istanbul report cobertura --dir  shippable/codecoverage/
