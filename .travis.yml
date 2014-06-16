@@ -10,14 +10,4 @@ before_script:
   - "sudo sh -e /etc/init.d/xvfb start"
   - npm start &
   - sleep 5
-  - npm install xunit-file
-  - npm install istanbul
-  - mkdir -p shippable/codecoverage
-
-#script:
-#  - "mkdir -p shippable/testresults && XUNIT_FILE=shippable/testresults/result.xml ./node_modules/mocha/bin/_mocha --timeout 5000 --reporter=xunit-file test/src/*.js"
-#after_script:
- # - "./node_modules/.bin/istanbul cover ./node_modules/mocha/bin/_mocha --timeout 5000 test/src/*.js && ./node_modules/.bin/istanbul report cobertura -dir shippable/codecoverage"
-after_script: 
-  - ./node_modules/.bin/istanbul cover ./node_modules/.bin/_mocha -- -u tdd 
-  - ./node_modules/.bin/istanbul report cobertura --dir  shippable/codecoverage/
+  
